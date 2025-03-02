@@ -1,4 +1,4 @@
-experiment: Default
+experiment: Default #训练光流网络的参数~
 
 data:
     path: datasets/data/training/
