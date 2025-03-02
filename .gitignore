@@ -1,5 +1,5 @@
-trained_models/
-__pycache__/
-mlruns/
-.vscode/
-*.pyc
+# trained_models/
+# __pycache__/
+# mlruns/
+# .vscode/
+# *.pyc

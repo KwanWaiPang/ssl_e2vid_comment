@@ -11,3 +11,8 @@
   <div align="center"></div>
 
 <!-- rm -rf .git -->
+
+* 训练代码为`python train_reconstruction.py`
+* 训练optical flow network代码为 `python train_flow.py`
+* 测试光流估算的代码为 `python eval_flow.py <path_to_model_dir>`
+* 测试图像重建的代码为 `python eval_reconstruction.py <path_to_model_dir>`
