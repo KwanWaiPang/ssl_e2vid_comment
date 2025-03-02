@@ -17,3 +17,6 @@
 * 训练optical flow network代码为 `python train_flow.py`对应的参数文件为`configs/train_flow.yml`
 * 测试光流估算的代码为 `python eval_flow.py <path_to_model_dir>`
 * 测试图像重建的代码为 `python eval_reconstruction.py <path_to_model_dir>`
+
+* 同样的采用[MLflow](https://mlflow.org/)来管理实验
+* [Event Contrast Maximization Library](https://github.com/TimoStoff/events_contrast_maximization)

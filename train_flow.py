@@ -38,7 +38,7 @@ def train(args, config_parser):
         vis = Visualization(config)
 
     # loss functions
-    loss_function = EventWarping(config, device)
+    loss_function = EventWarping(config, device)#定义loss function类
 
     # optical flow settings
     num_bins = config["data"]["num_bins"]
@@ -140,17 +140,17 @@ if __name__ == "__main__":
         "--config",
         default="configs/train_flow.yml",
         help="training configuration",
-    )
+    )#参数文件
     parser.add_argument(
         "--path_models",
         default="trained_models/",
         help="location of trained models",
-    )
+    )#训练的模型
     parser.add_argument(
         "--prev_model",
         default="",
         help="pre-trained model to use as starting point",
-    )
+    )#预训练模型（用于作为起点）
     args = parser.parse_args()
 
     # launch training
