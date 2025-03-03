@@ -60,7 +60,7 @@ def get_interpolation(events, flow, tref, res, flow_scaling, round_idx=False):
         weights = torch.max(zeros, 1 - torch.abs(warped_events - idx))
 
     # purge unfeasible indices
-    idx, mask = purge_unfeasible(idx, res)
+    idx, mask = purge_unfeasible(idx, res)#应该是将超出边界的点置为0
 
     # make unfeasible weights zero
     weights = torch.prod(weights, dim=-1, keepdim=True) * mask  # bilinear interpolation
