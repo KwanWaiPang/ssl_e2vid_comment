@@ -41,9 +41,9 @@ def train(args, config_parser):
     loss_function = EventWarping(config, device)#定义loss function类
 
     # optical flow settings
-    num_bins = config["data"]["num_bins"]
+    num_bins = config["data"]["num_bins"] #应该是事件voxel的bin数量也是5
     model = eval(config["model_flow"]["name"])(config["model_flow"].copy(), num_bins).to(device)
-    model = load_model(args.prev_model, model, device)
+    model = load_model(args.prev_model, model, device)#加载模型
     model.train()
 
     # model directory
@@ -54,7 +54,7 @@ def train(args, config_parser):
     config_parser.log_config(path_models)
 
     # data loader
-    data = H5Loader(config, num_bins)
+    data = H5Loader(config, num_bins)#读取数据，h5文件
     dataloader = torch.utils.data.DataLoader(
         data,
         drop_last=True,
@@ -77,7 +77,7 @@ def train(args, config_parser):
     # training loop
     data.shuffle()
     while True:
-        for inputs in dataloader:
+        for inputs in dataloader:#遍历数据集
 
             # check new epoch
             if data.seq_num >= len(data.files):
@@ -101,7 +101,7 @@ def train(args, config_parser):
             x = model(inputs["inp_voxel"].to(device), inputs["inp_cnt"].to(device))
 
             # loss and backward pass
-            loss = loss_function(x["flow"], inputs["inp_list"].to(device), inputs["inp_pol_mask"].to(device))
+            loss = loss_function(x["flow"], inputs["inp_list"].to(device), inputs["inp_pol_mask"].to(device))#调用loss_function类中的forward函数
             train_loss += loss.item()
             loss.backward()
             optimizer.step()

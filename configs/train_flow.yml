@@ -4,7 +4,7 @@ data:
     path: datasets/data/training/
     mode: events # events/time/frames
     window: 5000 # events/time/frames
-    num_bins: 5
+    num_bins: 5 #采用5 channel
 
 model_flow:
     name: EVFlowNet # FireFlowNet/EVFlowNet
@@ -13,7 +13,7 @@ model_flow:
     mask_output: False
 
 loss:
-    flow_regul_weight: 1
+    flow_regul_weight: 1 #正则化的权重
 
 optimizer:
     name: Adam

@@ -24,16 +24,16 @@ class EventWarping(nn.Module):
 
     def __init__(self, config, device):
         super(EventWarping, self).__init__()
-        self.res = config["loader"]["resolution"]
-        self.flow_scaling = max(config["loader"]["resolution"])
-        self.weight = config["loss"]["flow_regul_weight"]
+        self.res = config["loader"]["resolution"] #分辨率
+        self.flow_scaling = max(config["loader"]["resolution"]) #分辨率
+        self.weight = config["loss"]["flow_regul_weight"]#权重（正则化）
         self.device = device
 
     def forward(self, flow_list, event_list, pol_mask):
         """
-        :param flow_list: [[batch_size x 2 x H x W]] list of optical flow maps
-        :param event_list: [batch_size x N x 4] input events (y, x, ts, p)
-        :param pol_mask: [batch_size x N x 2] per-polarity binary mask of the input events
+        :param flow_list: [[batch_size x 2 x H x W]] list of optical flow maps，网络估算的光流
+        :param event_list: [batch_size x N x 4] input events (y, x, ts, p)，输入的事件
+        :param pol_mask: [batch_size x N x 2] per-polarity binary mask of the input events，输入事件的极性掩码
         """
 
         # split input
@@ -46,7 +46,7 @@ class EventWarping(nn.Module):
         flow_idx = torch.sum(flow_idx, dim=2)
 
         loss = 0
-        for flow in flow_list:
+        for flow in flow_list:#对于每个光流
 
             # get flow for every event in the list
             flow = flow.view(flow.shape[0], 2, -1)
@@ -54,13 +54,13 @@ class EventWarping(nn.Module):
             event_flowx = torch.gather(flow[:, 0, :], 1, flow_idx.long())  # horizontal component
             event_flowy = event_flowy.view(event_flowy.shape[0], event_flowy.shape[1], 1)
             event_flowx = event_flowx.view(event_flowx.shape[0], event_flowx.shape[1], 1)
-            event_flow = torch.cat([event_flowy, event_flowx], dim=2)
+            event_flow = torch.cat([event_flowy, event_flowx], dim=2)#把光流的x和y方向合并
 
             # interpolate forward
-            tref = 1
+            tref = 1#进行投影，为参考时间1，应该就是前向投影，最后的时间（因此事件的时间需要归一化！！！）
             fw_idx, fw_weights = get_interpolation(event_list, event_flow, tref, self.res, self.flow_scaling)
 
-            # per-polarity image of (forward) warped events
+            # per-polarity image of (forward) warped events（分开极性）
             fw_iwe_pos = interpolate(fw_idx.long(), fw_weights, self.res, polarity_mask=pol_mask[:, :, 0:1])
             fw_iwe_neg = interpolate(fw_idx.long(), fw_weights, self.res, polarity_mask=pol_mask[:, :, 1:2])
 
@@ -75,7 +75,7 @@ class EventWarping(nn.Module):
             fw_iwe_neg_ts /= fw_iwe_neg + 1e-9
 
             # interpolate backward
-            tref = 0
+            tref = 0 #进行投影，参考时间0，应该就是后向投影，最开始的时间
             bw_idx, bw_weights = get_interpolation(event_list, event_flow, tref, self.res, self.flow_scaling)
 
             # per-polarity image of (backward) warped events
@@ -100,11 +100,11 @@ class EventWarping(nn.Module):
             flow_dy = torch.sqrt(flow_dy ** 2 + 1e-6)  # charbonnier
 
             loss += (
-                torch.sum(fw_iwe_pos_ts ** 2)
-                + torch.sum(fw_iwe_neg_ts ** 2)
-                + torch.sum(bw_iwe_pos_ts ** 2)
-                + torch.sum(bw_iwe_neg_ts ** 2)
-                + self.weight * (flow_dx.sum() + flow_dy.sum())
+                torch.sum(fw_iwe_pos_ts ** 2)#前向正极性
+                + torch.sum(fw_iwe_neg_ts ** 2)#前向负极性
+                + torch.sum(bw_iwe_pos_ts ** 2)#后向正极性
+                + torch.sum(bw_iwe_neg_ts ** 2)#后向负极性
+                + self.weight * (flow_dx.sum() + flow_dy.sum())#正则化，应该就是Lsmooth
             )
 
         return loss

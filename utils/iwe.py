@@ -23,7 +23,7 @@ def get_interpolation(events, flow, tref, res, flow_scaling, round_idx=False):
     (or rounding) weights to distribute the events to the closes (integer) locations in the image space.
     :param events: [batch_size x N x 4] input events (y, x, ts, p)
     :param flow: [batch_size x 2 x H x W] optical flow map
-    :param tref: reference time toward which events are warped
+    :param tref: reference time toward which events are warped，参考时间
     :param res: resolution of the image space
     :param flow_scaling: scalar that multiplies the optical flow map
     :param round_idx: whether or not to round the event locations instead of doing bilinear interp. (default = False)

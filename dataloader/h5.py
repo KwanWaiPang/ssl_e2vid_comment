@@ -118,10 +118,10 @@ class H5Loader(BaseDataLoader):
         ys = file["events/ys"][idx0:idx1]
         ts = file["events/ts"][idx0:idx1]
         ps = file["events/ps"][idx0:idx1]
-        ts -= file.attrs["t0"]  # sequence starting at t0 = 0
+        ts -= file.attrs["t0"]  # sequence starting at t0 = 0，时间戳减去t0，去掉第一个时间戳
         if ts.shape[0] > 0:
             self.last_proc_timestamp = ts[-1]
-        ts *= 1.0e6  # us
+        ts *= 1.0e6  # us（转换为微妙）
         return xs, ys, ts, ps
 
     def get_event_index(self, batch, window=0):
@@ -174,7 +174,7 @@ class H5Loader(BaseDataLoader):
             if not restart:
                 idx0 = self.get_event_index(batch)
                 idx1 = self.get_event_index(batch, window=self.config["data"]["window"])
-                xs, ys, ts, ps = self.get_events(self.open_files[batch], idx0, idx1)
+                xs, ys, ts, ps = self.get_events(self.open_files[batch], idx0, idx1)#获取事件
 
             # trigger sequence change
             if (self.config["data"]["mode"] == "events" and xs.shape[0] < self.config["data"]["window"]) or xs.shape[
@@ -227,7 +227,7 @@ class H5Loader(BaseDataLoader):
             inp_cnt = self.create_cnt_encoding(xs, ys, ts, ps)
             inp_voxel = self.create_voxel_encoding(xs, ys, ts, ps)
             inp_list = self.create_list_encoding(xs, ys, ts, ps)
-            inp_pol_mask = self.create_polarity_mask(ps)
+            inp_pol_mask = self.create_polarity_mask(ps)#创建极性掩码
 
             # hot pixel removal
             if self.config["hot_filter"]["enabled"]:
@@ -269,7 +269,7 @@ class H5Loader(BaseDataLoader):
         output["inp_cnt"] = inp_cnt
         output["inp_voxel"] = inp_voxel
         output["inp_list"] = inp_list
-        output["inp_pol_mask"] = inp_pol_mask
+        output["inp_pol_mask"] = inp_pol_mask#创建的极性掩码
         if self.config["data"]["mode"] == "frames":
             output["inp_frames"] = inp_frames
 
