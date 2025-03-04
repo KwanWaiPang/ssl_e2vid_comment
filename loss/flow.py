@@ -25,7 +25,7 @@ class EventWarping(nn.Module):
     def __init__(self, config, device):
         super(EventWarping, self).__init__()
         self.res = config["loader"]["resolution"] #分辨率
-        self.flow_scaling = max(config["loader"]["resolution"]) #分辨率
+        self.flow_scaling = max(config["loader"]["resolution"]) #光流的尺度~
         self.weight = config["loss"]["flow_regul_weight"]#权重（正则化）
         self.device = device
 
